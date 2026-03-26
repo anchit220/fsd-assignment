@@ -13,7 +13,26 @@ function Calculator() {
 
     const calculate = () => {
         try {
-            setInput(eval(input).toString());
+            console.log("CALCULATE CLICKED"); // ✅ debug
+
+            const result = eval(input).toString();
+            setInput(result);
+
+            // ✅ SEND DATA TO BACKEND
+            fetch("http://localhost:5000/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    expression: input,
+                    result: result
+                })
+            })
+                .then(res => res.text())
+                .then(data => console.log("Saved:", data))
+                .catch(err => console.log("Error:", err));
+
         } catch {
             setInput("Error");
         }
@@ -30,7 +49,13 @@ function Calculator() {
                     <button
                         key={btn}
                         style={styles.button}
-                        onClick={() => btn === "=" ? calculate() : handleClick(btn)}
+                        onClick={() => {
+                            if (btn === "=") {
+                                calculate();
+                            } else {
+                                handleClick(btn);
+                            }
+                        }}
                     >
                         {btn}
                     </button>
@@ -75,4 +100,4 @@ const styles = {
     }
 };
 
-export default Calculator;  
+export default Calculator;
